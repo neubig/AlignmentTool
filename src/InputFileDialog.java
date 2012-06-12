@@ -22,12 +22,9 @@ import javax.swing.filechooser.FileFilter;
 public class InputFileDialog extends JButton {
 
 	public static final File[] file = new File[3];
-	public static final int ENGLISH = PanelTable.ENGLISH;
-	public static final int JAPANESE = PanelTable.JAPANESE;
-	public static final int MAPPINGDATA = PanelTable.MAPPINGDATA;
-	public static boolean isEnglishChoosed=false;
-	public static boolean isJapaneseChoosed=false;
-	public static boolean isMappingDataChoosed=false;
+	public static final int TRG = PanelTable.TRG;
+	public static final int SRC = PanelTable.SRC;
+	public static final int ALIGN = PanelTable.ALIGN;
 	public static String directory = null;
 
 	public InputFileDialog(int buttonKind){
@@ -38,13 +35,13 @@ public class InputFileDialog extends JButton {
 		ActionListenerOpenDialog actionListenerOpenDialog = new ActionListenerOpenDialog(buttonKind);
 		this.addActionListener(actionListenerOpenDialog);
 		switch(buttonKind){
-		case ENGLISH:
-			this.setText("Open English");
+		case TRG:
+			this.setText("Open Target");
 			break;
-		case JAPANESE:
-			this.setText("Open Japanese");
+		case SRC:
+			this.setText("Open Source");
 			break;
-		case MAPPINGDATA:
+		case ALIGN:
 			this.setText("Open Alignment");
 			break;
 		}
@@ -62,15 +59,15 @@ public class InputFileDialog extends JButton {
 			fileFilterFlag = true;
 
 			switch(buttonKind){
-			case ENGLISH :
-				dialogTitle = "Open English";
+			case TRG :
+				dialogTitle = "Open Target";
 				fileSelectionMode = JFileChooser.FILES_ONLY;
 				break;
-			case JAPANESE :
-				dialogTitle = "Open Japanese";
+			case SRC :
+				dialogTitle = "Open Source";
 				fileSelectionMode = JFileChooser.FILES_ONLY;
 				break;
-			case MAPPINGDATA :
+			case ALIGN :
 				dialogTitle = "Open Alignment";
 				fileSelectionMode = JFileChooser.FILES_ONLY;
 				break;
@@ -87,43 +84,8 @@ public class InputFileDialog extends JButton {
 			}
 			int selected = filechooser.showOpenDialog(null);
 			if (selected == JFileChooser.APPROVE_OPTION){
-				file[buttonKind] = filechooser.getSelectedFile();
-				directory = file[buttonKind].getParent();
-				switch(buttonKind){
-				case ENGLISH:
-					isEnglishChoosed = true;
-					break;
-				case JAPANESE:
-					isJapaneseChoosed = true;
-					break;
-				case MAPPINGDATA:
-					isMappingDataChoosed = true;
-					break;
-				}
-				if(isJapaneseChoosed && isEnglishChoosed && isMappingDataChoosed){
-
-					InputStreamReader fileReader = null;
-					ArrayList<String[]>[] lineArray = new ArrayList[3];
-
-					for (int i=0;i<3;i++){
-						lineArray[i] = new ArrayList<String[]>();
-						try{
-							String[] wordArray;
-							FileInputStream is = new FileInputStream(file[i]);
-							fileReader = new InputStreamReader(is, "UTF-8");
-							BufferedReader reader = new BufferedReader(fileReader);
-							String line;
-							for(int j=0;(line = reader.readLine()) != null;j++){
-								wordArray = line.split(" ");
-								lineArray[i].add(wordArray);
-							}
-						}	catch(IOException es){
-						}
-						finally{ try{ if(fileReader != null) fileReader.close(); } catch(IOException dae){} }
-					}
-					PanelTable.setData(lineArray);
-
-				}
+				directory = filechooser.getSelectedFile().getParent();
+                PanelTable.loadData(buttonKind, filechooser.getSelectedFile());
 			}
 		}
 

@@ -10,21 +10,28 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
 
 
 @SuppressWarnings("unchecked")
 public class PanelTable extends JPanel{
 
 	private static final long serialVersionUID = -5335691153210117889L;
-	public static final int ENGLISH = 0;
-	public static final int JAPANESE = 1;
-	public static final int MAPPINGDATA = 2;
+	public static final int TRG = 0;
+	public static final int SRC = 1;
+	public static final int ALIGN = 2;
 	public static ArrayList<String[]>[] arrayListOfSetData = new ArrayList[3];
 	public static ArrayList<Point> tablePointOfLine = new ArrayList<Point>();
 	public static ArrayList<JTable> MappingTable = new ArrayList<JTable>();
-	public static ArrayList<JList> EnglishWordTable = new ArrayList<JList>(),JapaneseWordTable = new ArrayList<JList>();
+	public static ArrayList<JList> TrgWordTable = new ArrayList<JList>(),SrcWordTable = new ArrayList<JList>();
 	public static ArrayList<JScrollPane> scrollPane = new ArrayList<JScrollPane>();
 	public static ArrayList<String[][]> stringTable = new ArrayList();
 	public static JLabel tate = new JLabel();
@@ -32,7 +39,7 @@ public class PanelTable extends JPanel{
 	public static JLabel pages = new JLabel();
 	public static int rowHeight = 16;
 	public static int charWidth = 14;
-	public static int currPage = 0, totalPage = 0;
+	public static int currPage = 0, trgSize = 0, srcSize = 0;
 	//public static DefaultTableModel defaultTableModel;
 	public static Dimension size = Main.PANEL_TABLE_SIZE;
 	public CardLayout cardLayout = new CardLayout();
@@ -44,10 +51,10 @@ public class PanelTable extends JPanel{
 		pages = pageLabel;
 	}
 
-	public static String[][] checkTable(int EnglishWordCount,int JapaneseWordCount,String[] MappingData){
-		String[][] checkMap = new String[EnglishWordCount][JapaneseWordCount];
-		for (int i=0;i<EnglishWordCount;i++){
-			for (int j=0;j<JapaneseWordCount;j++){
+	public static String[][] checkTable(int TrgWordCount,int SrcWordCount,String[] MappingData){
+		String[][] checkMap = new String[TrgWordCount][SrcWordCount];
+		for (int i=0;i<TrgWordCount;i++){
+			for (int j=0;j<SrcWordCount;j++){
 				checkMap[i][j] = " ";
 			}
 		}
@@ -64,24 +71,52 @@ public class PanelTable extends JPanel{
 	}
 
 
-	public static void setData(ArrayList<String[]>[] arrayListOfSetData){
-		PanelTable.arrayListOfSetData = arrayListOfSetData;
-		totalPage = arrayListOfSetData[ENGLISH].size();
-		currPage = 1;
-		for (int i=0;i<totalPage;i++){
-			JList EnglishWordList = new JList(arrayListOfSetData[ENGLISH].get(i));
-			EnglishWordList.setFixedCellHeight(rowHeight);
-			EnglishWordTable.add(EnglishWordList);
-			JList JapaneseWordList = new JList(arrayListOfSetData[JAPANESE].get(i));
-			JapaneseWordTable.add(JapaneseWordList);
+    public static void loadData(int pos, File file) {
+        arrayListOfSetData[pos] = new ArrayList<String[]>();
+        InputStreamReader fileReader = null;
+		try{
+			String[] wordArray;
+			FileInputStream is = new FileInputStream(file);
+			fileReader = new InputStreamReader(is, "UTF-8");
+			BufferedReader reader = new BufferedReader(fileReader);
+			String line;
+			for(int j=0;(line = reader.readLine()) != null;j++){
+				wordArray = line.split(" ");
+				arrayListOfSetData[pos].add(wordArray);
+			}
+		}	catch(IOException es){
+		}
+		finally{ try{ if(fileReader != null) fileReader.close(); } catch(IOException dae){} }
+    }
 
-			String[][] checkMap = checkTable(arrayListOfSetData[ENGLISH].get(i).length,
-					arrayListOfSetData[JAPANESE].get(i).length,
-					arrayListOfSetData[MAPPINGDATA].get(i));
+	public void reGenerateTable(){
+		PanelTable.arrayListOfSetData = arrayListOfSetData;
+		trgSize = arrayListOfSetData[TRG].size();
+		srcSize = arrayListOfSetData[SRC].size();
+        if(trgSize != srcSize) {
+            JOptionPane.showMessageDialog(null, "Source file and target file length don't match: source="+srcSize+", target="+trgSize);
+            return;
+        }
+        // Pad the alignment array to make sure that it matches size
+        if(arrayListOfSetData[ALIGN] == null)
+            arrayListOfSetData[ALIGN] = new ArrayList<String[]>();
+        while(arrayListOfSetData[ALIGN].size() < srcSize)
+            arrayListOfSetData[ALIGN].add(new String[0]);
+		currPage = 1;
+		for (int i=0;i<trgSize;i++){
+			JList TrgWordList = new JList(arrayListOfSetData[TRG].get(i));
+			TrgWordList.setFixedCellHeight(rowHeight);
+			TrgWordTable.add(TrgWordList);
+			JList SrcWordList = new JList(arrayListOfSetData[SRC].get(i));
+			SrcWordTable.add(SrcWordList);
+
+			String[][] checkMap = checkTable(arrayListOfSetData[TRG].get(i).length,
+					arrayListOfSetData[SRC].get(i).length,
+					arrayListOfSetData[ALIGN].get(i));
 			stringTable.add(checkMap);
 
-			DefaultTableModel defaultTableModel = new DefaultTableModel((String[]) arrayListOfSetData[JAPANESE].get(i),0);
-			for(int j = 0 ; j < arrayListOfSetData[ENGLISH].get(i).length ; j++){
+			DefaultTableModel defaultTableModel = new DefaultTableModel((String[]) arrayListOfSetData[SRC].get(i),0);
+			for(int j = 0 ; j < arrayListOfSetData[TRG].get(i).length ; j++){
 				defaultTableModel.addRow(checkMap[j]);
 			}
 			final JTable jtable = new JTable(defaultTableModel);
@@ -91,7 +126,7 @@ public class PanelTable extends JPanel{
 			jtable.setDefaultRenderer(Object.class,new BirowTableRenderer());
 			jtable.setRowHeight(rowHeight);
 			jtable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-			String[] jWords = arrayListOfSetData[JAPANESE].get(i);
+			String[] jWords = arrayListOfSetData[SRC].get(i);
 			for(int j = 0; j < jWords.length; j++)
 				jtable.getColumnModel().getColumn(j).setPreferredWidth(jWords[j].length()*charWidth+6);
 
@@ -112,18 +147,14 @@ public class PanelTable extends JPanel{
 			});
 			MappingTable.add(jtable);
 			JScrollPane jscrollPane = new JScrollPane(MappingTable.get(i));
-			jscrollPane.setRowHeaderView(EnglishWordTable.get(i));
-			//scrollPane.setColumnHeaderView(JapaneseWordTable);
+			jscrollPane.setRowHeaderView(TrgWordTable.get(i));
+			//scrollPane.setColumnHeaderView(SrcWordTable);
 			jscrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 			jscrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 			jscrollPane.setSize(size);
 			scrollPane.add(jscrollPane);
 		}
-
-	}
-
-	public void reGenerateTable(){
-		pages.setText(currPage+"/"+totalPage);
+		pages.setText(currPage+"/"+trgSize);
 		for (int i=0;i<scrollPane.size();i++){
 			String ID = ((Integer)i).toString();
 			this.add(ID,scrollPane.get(i));
@@ -182,19 +213,19 @@ public class PanelTable extends JPanel{
 	//�J�[�h���C�A�E�g��ύX����֐�
 	public void showNextPanel(){
 		cardLayout.next(this);
-		if(++currPage > totalPage) currPage = 1;
-		pages.setText(currPage+"/"+totalPage);
+		if(++currPage > trgSize) currPage = 1;
+		pages.setText(currPage+"/"+trgSize);
 	}
 	public void showPreviousPanel(){
 		cardLayout.previous(this);
-		if(--currPage == 0) currPage = totalPage;
-		pages.setText(currPage+"/"+totalPage);
+		if(--currPage == 0) currPage = trgSize;
+		pages.setText(currPage+"/"+trgSize);
 	}
 	public void showSpecifiedPanel(int i){
 		String ID = ((Integer)i).toString();
 		cardLayout.show(this, ID);
 		currPage = i;
-		pages.setText(currPage+"/"+totalPage);
+		pages.setText(currPage+"/"+trgSize);
 	}
 
 

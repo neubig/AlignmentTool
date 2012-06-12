@@ -87,7 +87,7 @@ public class ButtonPanelControl extends JButton {
 	private void initSpecify(){
 		this.setBorderPainted(false);
 		this.setSize(size);
-		//	this.backgroundImage = ImageIO.read(new File("/Users/hys/Documents/workspace/JapaneseEnglishWordMap/src/arrow_down.png"));
+		//	this.backgroundImage = ImageIO.read(new File("/Users/hys/Documents/workspace/SrcTrgWordMap/src/arrow_down.png"));
 		this.addActionListener(new actionListener(this.panelsTable,SPECIFY,panelNumber));
 	}
 

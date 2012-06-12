@@ -16,6 +16,7 @@ public class Main extends JFrame{
 	JTable table;
 	JScrollPane scroll;
 	public static PanelTable panelTable;
+	public static JButton button = new JButton("LOAD!");
 	public static boolean isFileOpened =false;
 	public static Dimension size = new Dimension(900,700);
 	public static Dimension PANEL_TABLE_SIZE = new Dimension(size.width-10,size.height-150);
@@ -58,17 +59,17 @@ public class Main extends JFrame{
 		this.add(pageLabel);
 		pageLabel.setBounds(PANEL_TABLE_SIZE.width/2-50, PANEL_TABLE_SIZE.height+50, 100, 20);
 
-		//panelTable.setData(ArrayOfEnglishWord, ArrayOfJapaneseWord, ArrayOfMappingData);
-		InputFileDialog englishDialog = new InputFileDialog(InputFileDialog.ENGLISH);
-		InputFileDialog japaneseDialog = new InputFileDialog(InputFileDialog.JAPANESE);
-		InputFileDialog mappingDataDialog = new InputFileDialog(InputFileDialog.MAPPINGDATA);
-		this.add(englishDialog);
-		this.add(japaneseDialog);
-		this.add(mappingDataDialog);
+		//panelTable.setData(ArrayOfTrgWord, ArrayOfSrcWord, ArrayOfMappingData);
+		InputFileDialog trgDialog = new InputFileDialog(InputFileDialog.TRG);
+		InputFileDialog srcDialog = new InputFileDialog(InputFileDialog.SRC);
+		InputFileDialog alignDialog = new InputFileDialog(InputFileDialog.ALIGN);
+		this.add(trgDialog);
+		this.add(srcDialog);
+		this.add(alignDialog);
 
-		englishDialog.setBounds(10,10,dialWidth,dialHeight);
-		japaneseDialog.setBounds(20+dialWidth,10,dialWidth,dialHeight);
-		mappingDataDialog.setBounds(30+dialWidth*2,10,dialWidth,dialHeight);
+		srcDialog.setBounds(10,10,dialWidth,dialHeight);
+		trgDialog.setBounds(20+dialWidth,10,dialWidth,dialHeight);
+		alignDialog.setBounds(30+dialWidth*2,10,dialWidth,dialHeight);
 		try {
 			ButtonPanelControl buttonNext = new ButtonPanelControl(ButtonPanelControl.NEXT, panelTable);
 			ButtonPanelControl buttonPrevious = new ButtonPanelControl(ButtonPanelControl.PREVIOUS, panelTable);
@@ -82,7 +83,6 @@ public class Main extends JFrame{
 			// TODO �����������ꂽ catch �u���b�N
 			e.printStackTrace();
 		}
-		JButton button = new JButton("LOAD!");
 		button.setBounds(600,10,100,dialHeight);
 		button.addActionListener(new ActionListener(){
 
