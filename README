@@ -1,0 +1,4 @@
+This is a tool for annotating alignments by Soichiro Hayashi (modified by Graham Neubig).
+Run it by using:
+
+java -jar alignmentTool.jar
