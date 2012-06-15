@@ -64,7 +64,11 @@ public class PanelTable extends JPanel{
 				String[] stringPair = MappingData[i].split("-");
 				checkPoint.x = Integer.parseInt(stringPair[1]);
 				checkPoint.y = Integer.parseInt(stringPair[0]);
-				checkMap[checkPoint.x][checkPoint.y] = "X";
+                if(checkPoint.x >= checkMap.length || checkPoint.y >= checkMap[0].length) {
+                    JOptionPane.showMessageDialog(null, "Alignment size ("+checkPoint.x+","+checkPoint.y+") > map size ("+checkMap.length+","+checkMap[0].length+") at sentece "+i);
+                } else {
+				    checkMap[checkPoint.x][checkPoint.y] = "X";
+                }
 			}
 		}
 		return checkMap;
