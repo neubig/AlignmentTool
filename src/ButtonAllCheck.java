@@ -57,7 +57,7 @@ public class ButtonAllCheck extends JButton implements ActionListener{
 			String text = new String();
 			switch(this.ID){
 			case ALIGN_ALL :
-				text = "X";
+				text = "S";
 				break;
 			case ALIGN_NONE :
 				text = "";

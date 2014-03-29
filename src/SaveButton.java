@@ -38,8 +38,9 @@ public class SaveButton extends JButton implements ActionListener{
 				String data = new String();
 				for (int column = 0;column < PanelTable.MappingTable.get(tableNumber).getModel().getColumnCount();column++){
 					for (int row = 0;row < PanelTable.MappingTable.get(tableNumber).getModel().getRowCount();row++){
-						if(PanelTable.MappingTable.get(tableNumber).getModel().getValueAt(row,column).equals("X")){
-							data = data +column+"-"+row+" ";
+                        String val = (String)PanelTable.MappingTable.get(tableNumber).getModel().getValueAt(row,column);
+						if(!val.equals("") && !val.equals(" ")){
+							data += column+"-"+row+"-"+val+" ";
 						}
 					}
 				}

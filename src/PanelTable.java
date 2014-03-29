@@ -64,10 +64,16 @@ public class PanelTable extends JPanel{
 				String[] stringPair = MappingData[i].split("-");
 				checkPoint.x = Integer.parseInt(stringPair[1]);
 				checkPoint.y = Integer.parseInt(stringPair[0]);
+                String variety = "S";
+                if(stringPair.length == 3) {
+                    if(stringPair[2] != "P" && stringPair[2] != "S")
+                        JOptionPane.showMessageDialog(null, "Bad alignment variety "+stringPair[2]+" at ("+checkPoint.x+","+checkPoint.y+") of sentence "+i);
+                    variety = stringPair[2];
+                }
                 if(checkPoint.x >= checkMap.length || checkPoint.y >= checkMap[0].length) {
-                    JOptionPane.showMessageDialog(null, "Alignment size ("+checkPoint.x+","+checkPoint.y+") > map size ("+checkMap.length+","+checkMap[0].length+") at sentece "+i);
+                    JOptionPane.showMessageDialog(null, "Alignment size ("+checkPoint.x+","+checkPoint.y+") > map size ("+checkMap.length+","+checkMap[0].length+") at sentence "+i);
                 } else {
-				    checkMap[checkPoint.x][checkPoint.y] = "X";
+				    checkMap[checkPoint.x][checkPoint.y] = variety;
                 }
 			}
 		}
@@ -182,11 +188,14 @@ public class PanelTable extends JPanel{
 		if (checkMap[0].length == columnSize && checkMap.length == rowSize){
 			for(int column = 0;column < columnSize;column++){
 				for (int row = 0;row < rowSize;row++){
-					if(checkMap[row][column].equals("X")){
-						PanelTable.MappingTable.get(pageNumber).getModel().setValueAt("X",row,column);
-					}else{
-						PanelTable.MappingTable.get(pageNumber).getModel().setValueAt("",row,column);
-					}
+                    if(checkMap[row][column] == null)
+                        checkMap[row][column] = "";
+					PanelTable.MappingTable.get(pageNumber).getModel().setValueAt(checkMap[row][column],row,column);
+					// if(checkMap[row][column].equals("X")){
+					// 	PanelTable.MappingTable.get(pageNumber).getModel().setValueAt("X",row,column);
+					// }else{
+					// 	PanelTable.MappingTable.get(pageNumber).getModel().setValueAt("",row,column);
+					// }
 				}
 			}
 
@@ -196,10 +205,12 @@ public class PanelTable extends JPanel{
 	}
 
 	private static void check(int row,int column,JTable jtable){
-		if(jtable.getModel().getValueAt(row, column).equals("X")){
+		if(jtable.getModel().getValueAt(row, column).equals("S")){
+			jtable.getModel().setValueAt("P",row, column);
+		}else if(jtable.getModel().getValueAt(row, column).equals("P")){
 			jtable.getModel().setValueAt("",row, column);
 		}else{
-			jtable.getModel().setValueAt("X",row, column);
+			jtable.getModel().setValueAt("S",row, column);
 		}
 	}
 	class MyTableModel extends DefaultTableModel{
