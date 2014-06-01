@@ -66,7 +66,7 @@ public class PanelTable extends JPanel{
 				checkPoint.y = Integer.parseInt(stringPair[0]);
                 String variety = "S";
                 if(stringPair.length == 3) {
-                    if(stringPair[2] != "P" && stringPair[2] != "S")
+                    if(!stringPair[2].equals("P") && !stringPair[2].equals("S"))
                         JOptionPane.showMessageDialog(null, "Bad alignment variety "+stringPair[2]+" at ("+checkPoint.x+","+checkPoint.y+") of sentence "+i);
                     variety = stringPair[2];
                 }
@@ -91,7 +91,7 @@ public class PanelTable extends JPanel{
 			BufferedReader reader = new BufferedReader(fileReader);
 			String line;
 			for(int j=0;(line = reader.readLine()) != null;j++){
-				wordArray = line.split(" ");
+				wordArray = line.trim().split(" ");
 				arrayListOfSetData[pos].add(wordArray);
 			}
 		}	catch(IOException es){
